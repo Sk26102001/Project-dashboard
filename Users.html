@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Title and Search Row</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Sidebar Styling */
+        .sidebar {
+            background-color: #1a202c; /* Darker blue-gray */
+            color: #a0aec0; /* Light gray for text */
+        }
+        .sidebar-item.active {
+            background-color: #2b6cb0; /* Blue for active item */
+            color: #ffffff;
+        }
+        .sidebar-item:hover:not(.active) {
+            background-color: #2d3748; /* Slightly lighter dark for hover */
+        }
+        /* Card Styling */
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        /* 🌙 Dark Mode Styling */
+
+        .dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4,
+.dark-mode h5,
+.dark-mode h6 {
+  color: #5195d9 !important; /* Tailwind's blue-400 */
+}
+.dark-mode {
+  background-color: #1a202c !important;
+  color: #e2e8f0 !important;
+}
+
+.dark-mode .card {
+  background-color: #2d3748 !important;
+  color: #e2e8f0 !important;
+}
+
+.dark-mode input,
+.dark-mode textarea,
+.dark-mode select {
+  background-color: #4a5568 !important;
+  color: #edf2f7 !important;
+  border-color: #718096 !important;
+}
+
+.dark-mode label {
+  color: #e2e8f0 !important;
+}
+
+.dark-mode .sidebar {
+  background-color: #2d3748 !important;
+  color: #cbd5e0 !important;
+}
+
+.dark-mode .sidebar-item.active {
+  background-color: #3182ce !important;
+  color: white !important;
+}
+
+.dark-mode .sidebar-item:hover:not(.active) {
+  background-color: #4a5568 !important;
+}
+
+.dark-mode button {
+  background-color: #3182ce !important;
+  color: white !important;
+}
+
+    </style>
+</head>
+<body class="bg-gray-100 flex ">
+
+    <div class="sidebar w-64 p-6 flex flex-col justify-between h-screen fixed">
+        <div>
+            <h1 class="text-white text-2xl font-bold mb-8">Admin Panel</h1>
+            <nav>
+                <ul>
+                    <li class="mb-2">
+                        <a href="Dashboard.html" class="sidebar-item flex items-center p-3 rounded-md text-lg">
+                            <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="sidebar-item active flex items-center p-3 rounded-md text-lg">
+                            <i class="fas fa-users mr-3"></i> Users
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="Products.html" class="sidebar-item flex items-center p-3 rounded-md text-lg">
+                            <i class="fas fa-box-open mr-3"></i> Products
+                        </a>
+                    </li>
+                       <li class="mb-2">
+                        <a href="Products.html" class="sidebar-item flex items-center p-3 rounded-md text-lg">
+                            <i class="fas fa-box-open mr-3"></i> Change Password
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div>
+            <a href="#" class="sidebar-item flex items-center p-3 rounded-md text-lg">
+                <i class="fas fa-sign-out-alt mr-3"></i> Logout
+            </a>
+            <button id="theme-toggle" class="flex items-center text-sm p-2 rounded-md transition duration-300 hover:bg-gray-700">
+  <i id="theme-icon" class="fas fa-sun mr-2"></i>
+  <span id="theme-text">Switch to Dark Mode</span>
+</button>
+
+        </div>
+    </div>
+
+    <div class="flex-1 ml-64 p-8">
+        
+        <div class="card p-6 min-h-full">
+            
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold text-gray-800">User Management</h2>
+
+                <div class="relative w-full max-w-sm">
+                    <input type="text" placeholder="Search users..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full ">
+                    <thead class="bg-gray-200">
+                        <tr class="border-b">
+                            <th class="py-3 px-4 text-left text-sm font-medium text-black uppercase tracking-wider w-1/4">USER</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-black uppercase tracking-wider w-1/4">CONTACT</th>
+                            <th class="py-3 px-4 text-left text-sm font-medium text-black uppercase tracking-wider w-1/4">CREDENTIALS</th>
+                            <th class="py-3 px-4 text-right text-sm font-medium text-black uppercase tracking-wider w-1/4">ACTION</th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4" class="py-12 text-center text-gray-500">No users found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-6 border-t border-gray-200 pt-4 flex items-center justify-between text-gray-600 text-sm">
+                <p>Showing 1 to 0 of 0 results</p>
+                
+                <div class="flex space-x-2">
+                    <button id="prevBtn" onclick="changePage(-1)" class="flex items-center px-4 py-2 border rounded-md text-gray-500 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-left mr-2 text-xs"></i> 
+                        Previous
+                    </button>
+                    <button id="nextBtn" onclick="changePage(1)" class="flex items-center px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-100">
+                        Next
+                        <i class="fas fa-chevron-right ml-2 text-xs"></i> 
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulated pagination logic
+        let currentPage = 1;
+        const totalPages = 5; 
+
+        function updatePagination() {
+            document.getElementById('prevBtn').disabled = (currentPage === 1);
+            document.getElementById('nextBtn').disabled = (currentPage === totalPages);
+
+            const resultsText = document.querySelector('.mt-6 p');
+            if (resultsText) {
+                if (totalPages === 0) {
+                     resultsText.textContent = 'Showing 1 to 0 of 0 results';
+                } else {
+                     resultsText.textContent = `Showing page ${currentPage} of ${totalPages} pages`;
+                }
+            }
+        }
+
+        function changePage(direction) {
+            const newPage = currentPage + direction;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                updatePagination();
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', updatePagination);
+    </script>
+
+    <script src="theme.js"></script>
+
+
+</body>
+</html>

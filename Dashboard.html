@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Custom Colors & Shadows (Light Mode Defaults) */
+        :root {
+            /* Main Colors */
+            --color-sidebar-bg: #1a202c;
+            --color-sidebar-text: #a0aec0;
+            --color-sidebar-active-bg: #2b6cb0;
+            --color-sidebar-active-text: #ffffff;
+            --color-sidebar-hover-bg: #2d3748;
+            
+            /* Body/Background */
+            --color-body-bg: #f7f7f7; /* Lighter gray for main background */
+            --color-card-bg: #ffffff;
+            --color-text-primary: #1f2937; /* Darker text */
+            --color-text-secondary: #6b7280; /* Lighter text */
+            --color-border: #e5e7eb;
+            --color-input-bg: #ffffff;
+            --color-ticket-row-hover: #f3f4f6;
+            --color-table-header-bg: #f9fafb;
+            --color-issue-desc-bg: #f9fafb;
+            --color-issue-desc-input-bg: #ffffff;
+
+            /* Utility colors (unchanged for dark mode) */
+            --color-blue-600: #2b6cb0;
+            --color-green-600: #38a169;
+            --color-purple-600: #805ad5;
+            --color-yellow-600: #d69e2e;
+            --color-red-600: #e53e3e;
+            --color-orange-600: #dd6b20;
+
+            /* Card badge background colors */
+            --color-blue-100: #ebf8ff;
+            --color-green-100: #f0fff4;
+            --color-purple-100: #faf5ff;
+            --color-yellow-100: #fefcbf;
+            --color-red-100: #fff5f5;
+            --color-orange-100: #fffaf0;
+        }
+
+        /* LIGHT MODE AND LAYOUT CHANGES */
+        html, body {
+            /* Ensure the page scrolls, not a container */
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-body-bg);
+            color: var(--color-text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        /* Make the sidebar static */
+        .sidebar {
+            background-color: var(--color-sidebar-bg);
+            color: var(--color-sidebar-text);
+            /* Important for fixing position, h-full, and top-0 are in HTML */
+        }
+
+        .sidebar-item.active {
+            background-color: var(--color-sidebar-active-bg);
+            color: var(--color-sidebar-active-text);
+        }
+        .sidebar-item:hover:not(.active) {
+            background-color: var(--color-sidebar-hover-bg);
+        }
+        .card {
+            background-color: var(--color-card-bg);
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        /* Generic text color applies to all elements inside the body */
+        .text-gray-500 { color: var(--color-text-secondary) !important; }
+        .tab-button.active {
+            border-bottom: 2px solid var(--color-blue-600);
+            color: var(--color-blue-600);
+        }
+        .tab-button:not(.active) { color: var(--color-text-secondary); }
+        .ticket-row:hover {
+            background-color: var(--color-ticket-row-hover);
+        }
+        .input-style {
+            background-color: var(--color-input-bg);
+            border-color: var(--color-border);
+            color: var(--color-text-primary);
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+        .table-header-bg {
+            background-color: var(--color-table-header-bg);
+        }
+        .issue-description-row td {
+            background-color: var(--color-issue-desc-bg);
+        }
+        .issue-description-row .issue-text-box {
+            background-color: var(--color-issue-desc-input-bg);
+            border-color: var(--color-border);
+        }
+        .table-body {
+            background-color: var(--color-card-bg); /* Use card background for table body */
+        }
+        .border-gray-200 { border-color: var(--color-border); }
+
+
+/* 🌙 Dark Mode Styling */
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4,
+.dark-mode h5,
+.dark-mode h6 {
+  color: #5195d9 !important; /* Tailwind's blue-400 */
+}
+.dark-mode {
+  background-color: #1a202c !important;
+  color: #e2e8f0 !important;
+}
+
+.dark-mode .card {
+  background-color: #2d3748 !important;
+  color: #e2e8f0 !important;
+}
+
+.dark-mode input,
+.dark-mode textarea,
+.dark-mode select {
+  background-color: #4a5568 !important;
+  color: #edf2f7 !important;
+  border-color: #718096 !important;
+}
+
+.dark-mode label {
+  color: #e2e8f0 !important;
+}
+
+.dark-mode .sidebar {
+  background-color: #2d3748 !important;
+  color: #cbd5e0 !important;
+}
+
+.dark-mode .sidebar-item.active {
+  background-color: #3182ce !important;
+  color: white !important;
+}
+
+.dark-mode .sidebar-item:hover:not(.active) {
+  background-color: #4a5568 !important;
+}
+
+.dark-mode button {
+  background-color: #3182ce !important;
+  color: white !important;
+}
+
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="sidebar w-64 p-6 flex flex-col justify-between fixed h-full top-0 left-0 z-10 overflow-y-auto">
+        <div>
+            <h1 class="text-white text-2xl font-bold mb-8">Admin Panel</h1>
+            <nav>
+                <ul>
+                    <li class="mb-2">
+                        <a href="#" class="sidebar-item active flex items-center p-3 rounded-md text-lg">
+                            <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="Users.html" class="sidebar-item flex items-center p-3 rounded-md text-lg">
+                            <i class="fas fa-users mr-3"></i> Users
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="Products.html" class="sidebar-item flex items-center p-3 rounded-md text-lg">
+                            <i class="fas fa-box-open mr-3"></i> Products
+                        </a>
+                    </li>
+                    
+                       <li class="mb-2">
+                        <a href="Password.html" class="sidebar-item flex items-center p-3 rounded-md text-lg">
+                            <i class=" fa-solid fa-key mr-3"></i>  Change Password
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div>
+            <a href="#" class="sidebar-item flex items-center p-3 rounded-md text-lg mb-4">
+                <i class="fas fa-sign-out-alt mr-3"></i> Logout
+            </a>
+            <button id="theme-toggle" class="flex items-center text-sm p-2 rounded-md transition duration-300 hover:bg-gray-700">
+                <i id="theme-icon" class="fas fa-sun mr-2"></i> 
+                <span id="theme-text">Switch to Dark Mode</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="flex-1 p-8 ml-64">
+        <h2 class="text-3xl font-semibold mb-8 text-gray-800">Admin Dashboard</h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+            <div class="card p-6 flex items-center">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: var(--color-blue-100); color: var(--color-blue-600);">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-gray-500 text-sm">Total Users</p>
+                    <p class="text-gray-900 text-2xl font-semibold">0</p>
+                </div>
+            </div>
+
+            <div class="card p-6 flex items-center">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: var(--color-green-100); color: var(--color-green-600);">
+                    <i class="fas fa-user-friends"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-gray-500 text-sm">Today's Users</p>
+                    <p class="text-gray-900 text-2xl font-semibold">0</p>
+                </div>
+            </div>
+
+            <div class="card p-6 flex items-center">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: var(--color-purple-100); color: var(--color-purple-600);">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-gray-500 text-sm">Total Withdrawal</p>
+                    <p class="text-gray-900 text-2xl font-semibold">₹0</p>
+                </div>
+            </div>
+
+            <div class="card p-6 flex items-center">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: var(--color-yellow-100); color: var(--color-yellow-600);">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-gray-500 text-sm">Pending Withdrawal</p>
+                    <p class="text-gray-900 text-2xl font-semibold">₹0</p>
+                </div>
+            </div>
+
+            <div class="card p-6 flex items-center">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: var(--color-red-100); color: var(--color-red-600);">
+                    <i class="fas fa-headphones"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-gray-500 text-sm">Total Tickets</p>
+                    <p class="text-gray-900 text-2xl font-semibold">1</p>
+                </div>
+            </div>
+
+            <div class="card p-6 flex items-center">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: var(--color-orange-100); color: var(--color-orange-600);">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-gray-500 text-sm">Open Tickets</p>
+                    <p class="text-gray-900 text-2xl font-semibold">1</p>
+                </div>
+            </div>
+
+            <div class="card p-6 flex items-center">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: var(--color-green-100); color: var(--color-green-600);">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-gray-500 text-sm">Closed Tickets</p>
+                    <p class="text-gray-900 text-2xl font-semibold">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-6">
+            <div class="flex border-b border-gray-200 mb-4">
+                <button id="tab-withdrawal" class="tab-button px-4 py-2 font-medium mr-4 transition duration-300">Withdrawal Transactions</button>
+                <button id="tab-support" class="tab-button active px-4 py-2 font-medium mr-4 transition duration-300">Support Tickets</button>
+            </div>
+
+            <div id="content-support" class="tab-content">
+                <h3 class="text-xl font-semibold mb-2 text-gray-800">Support Tickets</h3>
+                <p class="text-gray-500 text-sm mb-4">Manage all customer support requests</p>
+
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="relative flex-1">
+                        <input type="text" placeholder="Search by name, email, ticket number or issue" class="input-style w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    <div class="relative">
+                        <select class="input-style block appearance-none w-full border rounded-md py-2 px-4 pr-8 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option>Filter by status: All</option>
+                            <option>Open</option>
+                            <option>Closed</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full border-collapse">
+                        <thead>
+                            <tr class="table-header-bg">
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12"></th>
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">TICKET #</th>
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">NAME</th>
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">EMAIL</th>
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">MOBILE</th>
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">CREATED AT</th>
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">STATUS</th>
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 table-body">
+                            <tr class="ticket-row group cursor-pointer transition duration-150" data-ticket-id="TKT-133345-963">
+                                <td class="py-3 px-4 text-center text-red-500">
+                                    <i class="fas fa-times"></i>
+                                </td>
+                                <td class="py-3 px-4 whitespace-nowrap text-sm font-medium text-blue-600" style="color: var(--color-blue-600);">TKT-133345-963</td>
+                                <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900">Rohit Kumar</td>
+                                <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900">hryfdjb@gmail.com</td>
+                                <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900">7667676767</td>
+                                <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900">Sep 5, 2025, 11:32 AM</td>
+                                <td class="py-3 px-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800" style="background-color: var(--color-yellow-100); color: var(--color-yellow-600);">open</span>
+                                </td>
+                                <td class="py-3 px-4 whitespace-nowrap text-sm font-medium">
+                                    <!-- <button class="bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold py-1 px-3 rounded transition duration-150">Open</button>
+                                       <button class="bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold py-1 px-3 rounded transition duration-150">Close</button> -->
+<select
+  class="text-center input-style block appearance-none w-auto min-w-[110px]
+  border border-gray-300 rounded-md py-2 px-4 pr-8 leading-tight bg-white text-gray-700
+  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+>
+  
+  <option value="open">Open</option>
+  <option value="close">Close</option>
+</select>
+
+
+
+
+                                </td>
+                            </tr>
+                            <tr class="issue-description-row" data-ticket-id="TKT-133345-963">
+                                <td colspan="8" class="p-4">
+                                    <p class="text-sm font-semibold mb-1 text-gray-800">Issue Description</p>
+                                    <div class="issue-text-box p-3 border rounded-md shadow-inner text-sm mb-2">hello</div>
+                                    <p class="text-xs font-semibold text-gray-500">User ID: F8ODHGIjDVBAl</p>
+                                </td>
+                            </tr>
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="content-withdrawal" class="tab-content hidden">
+                <h3 class="text-xl font-semibold mb-2 text-gray-800">Withdrawal Transactions</h3>
+                <p class="text-gray-500 text-sm mb-4">Manage all withdrawal requests</p>
+
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="relative flex-1">
+                        <input type="text" placeholder="Search by name, token ID or title." class="input-style w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    <div class="relative">
+                        <select class="input-style block appearance-none w-full border rounded-md py-2 px-4 pr-8 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option>Filter by status: All</option>
+                            <option>Pending</option>
+                            <option>Approved</option>
+                            <option>Rejected</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="table-header-bg">
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">USER</th>
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TOKEN ID</th>
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TITLE</th>
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DATE</th>
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">AMOUNT</th>
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RECEIVED</th>
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TDS</th>
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
+                                <th class="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr>
+                                <td colspan="9" class="py-6 text-center text-gray-500">No withdrawal transactions found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- toast container -->
+<div id="toast-container" class="fixed top-5 right-5 space-y-3 z-50"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const actionDropdowns = document.querySelectorAll('td select');
+    const allowedRows = new Set();
+
+    // --- Dropdown Change Handler ---
+    actionDropdowns.forEach(dropdown => {
+        dropdown.addEventListener('change', function (e) {
+            e.stopPropagation();
+            const selected = this.value.toLowerCase();
+            const row = this.closest('tr');
+            const ticketId = row.getAttribute('data-ticket-id');
+            const statusCell = row.querySelector('td:nth-child(7) span');
+            const descriptionRow = document.querySelector(`.issue-description-row[data-ticket-id="${ticketId}"]`);
+
+            if (selected === 'open' || selected === 'close') {
+                allowedRows.add(ticketId); // mark this ticket as processed
+
+                // Update status text + color
+                if (selected === 'open') {
+                    statusCell.textContent = 'open';
+                    statusCell.style.backgroundColor = 'var(--color-yellow-100)';
+                    statusCell.style.color = 'var(--color-yellow-600)';
+                } else {
+                    statusCell.textContent = 'closed';
+                    statusCell.style.backgroundColor = 'var(--color-green-100)';
+                    statusCell.style.color = 'var(--color-green-600)';
+                }
+
+                // ✅ Open the down content automatically
+                if (descriptionRow) {
+                    descriptionRow.classList.remove('hidden');
+                }
+
+                // ✅ Show success toast
+                showToast(`Ticket marked as ${selected}`);
+            }
+        });
+    });
+
+    // --- Toast Function ---
+    function showToast(message) {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast bg-green-600 text-white px-4 py-2 rounded-lg shadow-md transform transition-all duration-500 translate-x-0 opacity-100`;
+        toast.textContent = message;
+
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-x-5');
+        }, 2500);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+});
+</script>
+
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Tab Switching Logic ---
+            const supportTab = document.getElementById('tab-support');
+            const withdrawalTab = document.getElementById('tab-withdrawal');
+            const contentSupport = document.getElementById('content-support');
+            const contentWithdrawal = document.getElementById('content-withdrawal');
+
+            function switchTab(activeTabId) {
+                withdrawalTab.classList.remove('active');
+                supportTab.classList.remove('active');
+                contentWithdrawal.classList.add('hidden');
+                contentSupport.classList.add('hidden');
+
+                if (activeTabId === 'support') {
+                    supportTab.classList.add('active');
+                    contentSupport.classList.remove('hidden');
+                } else if (activeTabId === 'withdrawal') {
+                    withdrawalTab.classList.add('active');
+                    contentWithdrawal.classList.remove('hidden');
+                }
+            }
+            switchTab('withdrawal'); // Set initial state
+            supportTab.addEventListener('click', () => switchTab('support'));
+            withdrawalTab.addEventListener('click', () => switchTab('withdrawal'));
+
+            // --- Issue Description Toggle Logic ---
+            document.querySelectorAll('.ticket-row').forEach(row => {
+                row.addEventListener('click', function() {
+                    const ticketId = this.getAttribute('data-ticket-id');
+                    const descriptionRow = document.querySelector(`.issue-description-row[data-ticket-id="${ticketId}"]`);
+                    if (descriptionRow) {
+                        descriptionRow.classList.toggle('hidden');
+                    }
+                });
+            });
+            
+            // Hide all description rows initially for a toggle effect (except the one shown in the image)
+            document.querySelectorAll('.issue-description-row').forEach(row => {
+                if(row.getAttribute('data-ticket-id') !== 'TKT-133345-963') {
+                    row.classList.add('hidden');
+                }
+            });
+
+            // --- Light/Dark Mode Toggle Logic ---
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            const body = document.body;
+
+            // Load theme from localStorage or default to 'light'
+            let currentTheme = localStorage.getItem('theme') || 'light';
+
+            function updateTheme(theme) {
+                if (theme === 'dark') {
+                    body.classList.add('dark-mode');
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                    themeText.textContent = 'Switch to Light Mode';
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    body.classList.remove('dark-mode');
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                    themeText.textContent = 'Switch to Dark Mode';
+                    localStorage.setItem('theme', 'light');
+                }
+                currentTheme = theme;
+            }
+
+            // Apply initial theme
+            updateTheme(currentTheme);
+            
+            // Toggle theme on button click
+            themeToggle.addEventListener('click', () => {
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                updateTheme(newTheme);
+            });
+        });
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+    // --- X / Eye Icon Toggle + Description Show/Hide ---
+    document.querySelectorAll('.ticket-row').forEach(row => {
+        const iconCell = row.querySelector('td i'); // get the icon inside the first <td>
+        const ticketId = row.getAttribute('data-ticket-id');
+        const descriptionRow = document.querySelector(`.issue-description-row[data-ticket-id="${ticketId}"]`);
+
+        // default state: visible icon should match description
+        if (descriptionRow.classList.contains('hidden')) {
+            iconCell.classList.remove('fa-times');
+            iconCell.classList.add('fa-eye');
+            iconCell.classList.add('text-green-500');
+            iconCell.classList.remove('text-red-500');
+        } else {
+            iconCell.classList.add('fa-times');
+            iconCell.classList.remove('fa-eye');
+            iconCell.classList.add('text-red-500');
+            iconCell.classList.remove('text-green-500');
+        }
+
+        // click handler for icon
+        iconCell.addEventListener('click', function (e) {
+            e.stopPropagation(); // prevent row click interference
+
+            if (descriptionRow.classList.contains('hidden')) {
+                // open it
+                descriptionRow.classList.remove('hidden');
+                iconCell.classList.remove('fa-eye', 'text-green-500');
+                iconCell.classList.add('fa-times', 'text-red-500');
+            } else {
+                // close it
+                descriptionRow.classList.add('hidden');
+                iconCell.classList.remove('fa-times', 'text-red-500');
+                iconCell.classList.add('fa-eye', 'text-green-500');
+            }
+        });
+    });
+});
+
+    </script>
+
+    <script src="theme.js"></script>
+
+</body>
+</html>
